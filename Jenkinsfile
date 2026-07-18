@@ -27,14 +27,24 @@ pipeline {
                 archiveArtifacts artifacts: 'target/*.war', fingerprint: true
             }
         }
+
+        stage('Deploy to Tomcat') {
+            steps {
+                sh '''
+                scp -o StrictHostKeyChecking=no \
+                target/dogmart.war \
+                ec2-user@172.31.22.8:/opt/tomcat/webapps/
+                '''
+            }
+        }
     }
 
     post {
         success {
-            echo 'DogMart build completed successfully!'
+            echo 'DogMart deployed successfully!'
         }
         failure {
-            echo 'DogMart build failed!'
+            echo 'Build or deployment failed!'
         }
     }
 }
