@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven3'
-        jdk 'JDK21'
-    }
-
     stages {
 
         stage('Checkout') {
@@ -14,13 +9,20 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Verify Environment') {
             steps {
-                bat 'mvn clean package'
+                sh 'java -version'
+                sh 'mvn -version'
             }
         }
 
-        stage('Archive Artifact') {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Archive WAR') {
             steps {
                 archiveArtifacts artifacts: 'target/*.war', fingerprint: true
             }
